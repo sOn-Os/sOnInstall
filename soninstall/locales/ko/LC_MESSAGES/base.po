@@ -1577,8 +1577,8 @@ msgid "Disabled"
 msgstr ""
 
 #, fuzzy
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "    이 문제(및 파일)를 https://github.com/aOnurTheDev/sOnInstall/issues 에 제출하세요"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "    이 문제(및 파일)를 https://github.com/sOn-Os/sOnInstall/issues 에 제출하세요"
 
 #, fuzzy
 msgid "Mirror name"

@@ -1534,8 +1534,8 @@ msgstr "Käytössä"
 msgid "Disabled"
 msgstr "Pois käytostä"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Lähetä tämä ongelma (ja tiedosto) osoitteeseen https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Lähetä tämä ongelma (ja tiedosto) osoitteeseen https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "Peilin nimi"

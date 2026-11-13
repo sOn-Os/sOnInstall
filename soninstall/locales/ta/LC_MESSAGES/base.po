@@ -1527,8 +1527,8 @@ msgid "Disabled"
 msgstr ""
 
 #, fuzzy
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr " இந்த சிக்கல் (மற்றும் கோப்பை) https://github.com/aOnurTheDev/sOnInstall/issues க்கு சமர்ப்பிக்கவும்"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr " இந்த சிக்கல் (மற்றும் கோப்பை) https://github.com/sOn-Os/sOnInstall/issues க்கு சமர்ப்பிக்கவும்"
 
 #, fuzzy
 msgid "Mirror name"

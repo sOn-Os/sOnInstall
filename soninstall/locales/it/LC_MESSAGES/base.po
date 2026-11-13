@@ -687,8 +687,8 @@ msgstr "Repository personalizzati"
 msgid "[!] A log file has been created here: {}"
 msgstr "[!] Un file di log è stato creato qui: {}"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Invia questo problema (e il file) a https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Invia questo problema (e il file) a https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Syncing the system..."
 msgstr "Sincronizzazione del sistema in corso…"

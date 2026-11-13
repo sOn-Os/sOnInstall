@@ -664,8 +664,8 @@ msgstr "Niestandardowe repozytoria"
 msgid "[!] A log file has been created here: {}"
 msgstr "[!] Plik dziennika został zapisany tutaj: {}"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Proszę zgłosić ten błąd (i dołączyć plik) pod adresem https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Proszę zgłosić ten błąd (i dołączyć plik) pod adresem https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Syncing the system..."
 msgstr "Synchronizowanie systemu..."

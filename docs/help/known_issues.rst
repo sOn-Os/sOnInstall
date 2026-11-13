@@ -132,5 +132,5 @@ This means that feature requests like supporting filesystems such as `ZFS`_ can 
 .. _archlinux-keyring: https://archlinux.org/packages/core/any/archlinux-keyring/
 .. _archlinux-keyring-wkd-sync.service: https://gitlab.archlinux.org/archlinux/archlinux-keyring/-/blob/7e672dad10652a80d1cc575d75cdb46442cd7f96/wkd_sync/archlinux-keyring-wkd-sync.service.in
 .. _ZFS: https://aur.archlinux.org/packages/zfs-linux
-.. _sOninstall: https://github.com/aOnurTheDev/sOnInstall/
+.. _sOninstall: https://github.com/sOn-Os/sOnInstall/
 .. _timedatectl show: https://github.com/archlinux/archinstall/blob/e6344f93f7e476d05bbcd642f2ed91fdde545870/archinstall/lib/installer.py#L136

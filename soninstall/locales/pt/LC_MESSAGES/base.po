@@ -1494,8 +1494,8 @@ msgstr "Ativado"
 msgid "Disabled"
 msgstr "Desativado"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Submeta este problema (e ficheiro) para https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Submeta este problema (e ficheiro) para https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "Nome do espelho"

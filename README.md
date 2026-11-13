@@ -4,11 +4,11 @@
 
 <p align="center">
   <b>sOninstall: nine questions, then a ready desktop.</b><br>
-  The installer of <a href="https://github.com/aOnurTheDev/sOnOs">sOnOs</a>, an Arch-based Linux distribution for developers and gamers.
+  The installer of <a href="https://github.com/sOn-Os/sOnOs">sOnOs</a>, an Arch-based Linux distribution for developers and gamers.
 </p>
 
 <p align="center">
-  <a href="https://github.com/aOnurTheDev/sOnOs/releases"><img src="https://img.shields.io/badge/get-sOnOs-E53935?style=for-the-badge" alt="Get sOnOs"></a>
+  <a href="https://github.com/sOn-Os/sOnOs/releases"><img src="https://img.shields.io/badge/get-sOnOs-E53935?style=for-the-badge" alt="Get sOnOs"></a>
   <img src="https://img.shields.io/badge/status-beta-0B0909?style=for-the-badge" alt="Status: beta">
   <img src="https://img.shields.io/badge/python-3.14-0B0909?style=for-the-badge" alt="Python 3.14">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-0B0909?style=for-the-badge" alt="License: GPL-3.0"></a>
@@ -31,7 +31,7 @@
 
 ## Installing sOnOs
 
-Boot the [sOnOs ISO](https://github.com/aOnurTheDev/sOnOs/releases). The installer starts on its own and asks:
+Boot the [sOnOs ISO](https://github.com/sOn-Os/sOnOs/releases). The installer starts on its own and asks:
 
 | Step | Question | Notes |
 |:---:|---|---|
@@ -125,7 +125,7 @@ cd soninstall-git && makepkg -si
 Or run it from the source code, once the dependencies listed in [pyproject.toml](pyproject.toml) are installed:
 
 ```shell
-git clone https://github.com/aOnurTheDev/sOnInstall
+git clone https://github.com/sOn-Os/sOnInstall
 cd sOnInstall && sudo python -m soninstall
 ```
 
@@ -133,7 +133,7 @@ sOninstall can be installed next to archinstall.
 
 ## Putting sOninstall on the sOnOs ISO
 
-The [sOnOs ISO profile](https://github.com/aOnurTheDev/sOnOs) installs `soninstall` from a local package repository. To build the package from this checkout, uncommitted changes included, into that repository:
+The [sOnOs ISO profile](https://github.com/sOn-Os/sOnOs) installs `soninstall` from a local package repository. To build the package from this checkout, uncommitted changes included, into that repository:
 
 ```shell
 packaging/local/build-repo.sh ~/sOnOs/repo
@@ -207,7 +207,7 @@ pacman -Sy archlinux-keyring
 <details>
 <summary>Something went wrong, how do I report it?</summary>
 
-Open an [issue](https://github.com/aOnurTheDev/sOnInstall/issues) and include the log. From the ISO, this command uploads it and prints a link to share:
+Open an [issue](https://github.com/sOn-Os/sOnInstall/issues) and include the log. From the ISO, this command uploads it and prints a link to share:
 
 ```shell
 soninstall share-log

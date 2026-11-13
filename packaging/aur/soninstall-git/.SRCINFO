@@ -2,7 +2,7 @@ pkgbase = soninstall-git
 	pkgdesc = sOninstall, the guided and automated installer for sOnOs (a fork of archinstall)
 	pkgver = 4.5
 	pkgrel = 1
-	url = https://github.com/aOnurTheDev/sOnInstall
+	url = https://github.com/sOn-Os/sOnInstall
 	arch = any
 	license = GPL-3.0-only
 	makedepends = git
@@ -37,7 +37,7 @@ pkgbase = soninstall-git
 	optdepends = python-systemd: for systemd-journald support
 	provides = soninstall
 	conflicts = soninstall
-	source = soninstall::git+https://github.com/aOnurTheDev/sOnInstall.git
+	source = soninstall::git+https://github.com/sOn-Os/sOnInstall.git
 	sha256sums = SKIP
 
 pkgname = soninstall-git

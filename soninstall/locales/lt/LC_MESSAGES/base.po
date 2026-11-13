@@ -1440,8 +1440,8 @@ msgid "Disabled"
 msgstr ""
 
 #, fuzzy
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "    Prašome pateiktį šitą problemą (ir failą) https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "    Prašome pateiktį šitą problemą (ir failą) https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr ""

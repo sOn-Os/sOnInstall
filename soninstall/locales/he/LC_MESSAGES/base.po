@@ -1513,8 +1513,8 @@ msgstr "פעיל"
 msgid "Disabled"
 msgstr "מושבת"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "נא להגיש דיווח על הבעיה הזאת (ואת הקובץ) דרך https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "נא להגיש דיווח על הבעיה הזאת (ואת הקובץ) דרך https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "שם אתר המראה"

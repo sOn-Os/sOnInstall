@@ -1591,8 +1591,8 @@ msgid "Disabled"
 msgstr "Uitgeschakeld"
 
 #, fuzzy
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Meld dit voorval (inclusief het logboek) op https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Meld dit voorval (inclusief het logboek) op https://github.com/sOn-Os/sOnInstall/issues"
 
 #, fuzzy
 msgid "Mirror name"

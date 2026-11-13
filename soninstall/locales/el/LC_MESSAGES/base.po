@@ -1602,8 +1602,8 @@ msgid "Disabled"
 msgstr ""
 
 #, fuzzy
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "    Παρακαλώ επισυνάψτε αυτό το issue (και αρχείο) στο https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "    Παρακαλώ επισυνάψτε αυτό το issue (και αρχείο) στο https://github.com/sOn-Os/sOnInstall/issues"
 
 #, fuzzy
 msgid "Mirror name"

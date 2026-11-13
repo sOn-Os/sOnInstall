@@ -180,7 +180,7 @@ def _error_message(exc: Exception) -> None:
 	text = textwrap.dedent(
 		"""\
 		sOninstall experienced the above error. If you think this is a bug, please report it to
-		https://github.com/aOnurTheDev/sOnInstall/issues and include the log file "/var/log/soninstall/install.log".
+		https://github.com/sOn-Os/sOnInstall/issues and include the log file "/var/log/soninstall/install.log".
 
 		Hint: To upload the log and get a shareable URL, run
 		soninstall share-log

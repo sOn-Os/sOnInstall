@@ -1559,8 +1559,8 @@ msgstr "己啟用"
 msgid "Disabled"
 msgstr "己停用"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "請將此問題（以及檔案）提交到 https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "請將此問題（以及檔案）提交到 https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "鏡像伺服器區域"

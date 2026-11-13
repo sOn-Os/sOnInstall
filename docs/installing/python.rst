@@ -29,7 +29,7 @@ For sake of simplicity we will use ``git clone`` in this example.
 
 .. code-block:: console
 
-    git clone https://github.com/aOnurTheDev/sOnInstall
+    git clone https://github.com/sOn-Os/sOnInstall
 
 You can either move the folder into your project and simply do
 

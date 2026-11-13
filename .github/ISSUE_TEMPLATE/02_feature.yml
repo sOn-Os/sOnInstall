@@ -5,7 +5,7 @@ body:
     attributes:
       value: >
         Please read our short mission statement before requesting more features:
-        https://github.com/aOnurTheDev/sOnInstall#mission-statement
+        https://github.com/sOn-Os/sOnInstall#mission-statement
 
   - type: textarea
     id: freeform

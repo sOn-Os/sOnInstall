@@ -693,9 +693,9 @@ msgstr "カスタムリポジトリ"
 msgid "[!] A log file has been created here: {}"
 msgstr "[!] ここにログファイルが作成されました: {}"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
 msgstr ""
-"この問題（およびファイル）を https://github.com/aOnurTheDev/sOnInstall/issues に送信してください"
+"この問題（およびファイル）を https://github.com/sOn-Os/sOnInstall/issues に送信してください"
 
 msgid "Syncing the system..."
 msgstr "システムを同期..."

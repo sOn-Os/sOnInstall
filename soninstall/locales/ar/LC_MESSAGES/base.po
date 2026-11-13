@@ -1511,8 +1511,8 @@ msgstr "مفعّل"
 msgid "Disabled"
 msgstr "معطّل"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "يُرجى تسليم تقرير عن هذا الخلل (مع المِلَف) إلى https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "يُرجى تسليم تقرير عن هذا الخلل (مع المِلَف) إلى https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "اسم المرآة"

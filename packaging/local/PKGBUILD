@@ -7,7 +7,7 @@ pkgver=4.5
 pkgrel=1
 pkgdesc='sOninstall, the guided and automated installer for sOnOs (a fork of archinstall)'
 arch=('any')
-url='https://github.com/aOnurTheDev/sOnInstall'
+url='https://github.com/sOn-Os/sOnInstall'
 license=('GPL-3.0-only')
 depends=(
 	'arch-install-scripts'

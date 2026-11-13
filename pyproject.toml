@@ -27,9 +27,9 @@ dependencies = [
 ]
 
 [project.urls]
-Home = "https://github.com/aOnurTheDev/sOnInstall"
-Documentation = "https://github.com/aOnurTheDev/sOnInstall#readme"
-Source = "https://github.com/aOnurTheDev/sOnInstall"
+Home = "https://github.com/sOn-Os/sOnInstall"
+Documentation = "https://github.com/sOn-Os/sOnInstall#readme"
+Source = "https://github.com/sOn-Os/sOnInstall"
 
 [project.optional-dependencies]
 log = ["systemd_python>=235"]
