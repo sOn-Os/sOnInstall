@@ -1,21 +1,17 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/logo/sonos.svg">
-    <img src="docs/logo/sonos-light.svg" alt="sOnOs" width="320">
-  </picture>
-</p>
-
-<h1 align="center">sOninstall</h1>
-
-<p align="center">
-  The installer of <a href="https://github.com/aOnurTheDev/sOnOs">sOnOs</a>, an Arch-based Linux distribution for developers and gamers.<br>
-  Nine questions, then a ready desktop.
+  <img src=".github/banner.png" alt="sOnOs" width="100%">
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-blue" alt="License: GPL-3.0"></a>
-  <img src="https://img.shields.io/badge/python-3.14-blue" alt="Python 3.14">
-  <a href="https://github.com/aOnurTheDev/sOnInstall/issues"><img src="https://img.shields.io/github/issues/aOnurTheDev/sOnInstall" alt="Issues"></a>
+  <b>sOninstall: nine questions, then a ready desktop.</b><br>
+  The installer of <a href="https://github.com/aOnurTheDev/sOnOs">sOnOs</a>, an Arch-based Linux distribution for developers and gamers.
+</p>
+
+<p align="center">
+  <a href="https://github.com/aOnurTheDev/sOnOs/releases"><img src="https://img.shields.io/badge/get-sOnOs-E53935?style=for-the-badge" alt="Get sOnOs"></a>
+  <img src="https://img.shields.io/badge/status-beta-0B0909?style=for-the-badge" alt="Status: beta">
+  <img src="https://img.shields.io/badge/python-3.14-0B0909?style=for-the-badge" alt="Python 3.14">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-0B0909?style=for-the-badge" alt="License: GPL-3.0"></a>
 </p>
 
 ---
