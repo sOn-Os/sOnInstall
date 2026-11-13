@@ -64,6 +64,7 @@ include-package-data = true
     "**/*.kdl",
     "**/*.txt",
     "**/*.svg",
+    "**/*.jpg",
 ]
 
 [tool.setuptools.package-dir]

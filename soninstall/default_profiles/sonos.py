@@ -1,4 +1,5 @@
 import json
+import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, override
 
@@ -22,6 +23,109 @@ LOGO_ICON_TARGETS = ['usr/share/icons/hicolor/scalable/apps/sonos.svg', 'usr/sha
 
 # The text above the console login prompt, the name comes from os-release (Arch Linux otherwise)
 ISSUE = '\\S{PRETTY_NAME} \\r (\\l)\n\n'
+
+# The wallpapers: the first one is the default, both can be picked in the settings of the desktop
+WALLPAPER_DIR = 'usr/share/backgrounds/sonos'
+WALLPAPERS: dict[str, tuple[Path, str]] = {
+	'sonos.jpg': (Path(__file__).parent / 'sonos_assets/wallpaper-sonos.jpg', 'sOnOs'),
+	'sonos-terminal.jpg': (Path(__file__).parent / 'sonos_assets/wallpaper-sonos-terminal.jpg', 'sOnOs Terminal'),
+}
+DEFAULT_WALLPAPER = f'/{WALLPAPER_DIR}/sonos.jpg'
+
+# Each desktop has its own place for the default wallpaper
+# KDE Plasma: runs the scripts in this directory once for every user when the desktop starts
+PLASMA_UPDATE_SCRIPT = 'usr/share/plasma/shells/org.kde.plasma.desktop/contents/updates/sonos-wallpaper.js'
+PLASMA_WALLPAPER_SCRIPT = """// sOninstall: the sOnOs wallpaper on every desktop
+for (const desktop of desktops()) {
+	desktop.wallpaperPlugin = "org.kde.image";
+	desktop.currentConfigGroup = ["Wallpaper", "org.kde.image", "General"];
+	desktop.writeConfig("Image", "file:///usr/share/wallpapers/sOnOs/");
+}
+"""
+# KDE Plasma lock screen
+PLASMA_LOCK_SCREEN = """[Greeter]
+WallpaperPlugin=org.kde.image
+
+[Greeter][Wallpaper][org.kde.image][General]
+Image=file:///usr/share/wallpapers/sOnOs/
+"""
+# GNOME, Budgie, Cinnamon and MATE: defaults for their settings; the ones of desktops
+# that are not installed are skipped with a warning when the schemas are compiled
+GSCHEMA_OVERRIDE = f"""[org.gnome.desktop.background]
+picture-uri='file://{DEFAULT_WALLPAPER}'
+picture-uri-dark='file://{DEFAULT_WALLPAPER}'
+picture-options='zoom'
+primary-color='#0B0909'
+
+[org.gnome.desktop.screensaver]
+picture-uri='file://{DEFAULT_WALLPAPER}'
+picture-options='zoom'
+primary-color='#0B0909'
+
+[org.cinnamon.desktop.background]
+picture-uri='file://{DEFAULT_WALLPAPER}'
+picture-options='zoom'
+
+[org.mate.background]
+picture-filename='{DEFAULT_WALLPAPER}'
+picture-options='zoom'
+"""
+# COSMIC: its system defaults are looked up in XDG_DATA_DIRS, where /usr/local/share comes
+# before the file of the cosmic-bg package
+COSMIC_BACKGROUND = 'usr/local/share/cosmic/com.system76.CosmicBackground/v1/all'
+COSMIC_BACKGROUND_CONFIG = f"""(
+	output: "all",
+	source: Path("{DEFAULT_WALLPAPER}"),
+	filter_by_theme: false,
+	rotation_frequency: 3600,
+	filter_method: Lanczos,
+	scaling_mode: Zoom,
+	sampling_method: Alphanumeric,
+)
+"""
+# Xfce and LXQt only keep the wallpaper per user, so it is set once at the first login
+WALLPAPER_AUTOSTART_SCRIPT = f"""#!/bin/sh
+# sOninstall: sets the sOnOs wallpaper once for every user on Xfce and LXQt
+marker="${{XDG_CONFIG_HOME:-$HOME/.config}}/sonos-wallpaper-set"
+[ -e "$marker" ] && exit 0
+image={DEFAULT_WALLPAPER}
+
+case "$XDG_CURRENT_DESKTOP" in
+	*XFCE*)
+		# xfdesktop adds a property for every monitor and workspace once it runs
+		for _ in $(seq 30); do
+			properties=$(xfconf-query -c xfce4-desktop -l 2>/dev/null | grep '/last-image$')
+			[ -n "$properties" ] && break
+			sleep 1
+		done
+		[ -z "$properties" ] && exit 0
+		for property in $properties; do
+			xfconf-query -c xfce4-desktop -p "$property" -s "$image"
+			xfconf-query -c xfce4-desktop -p "${{property%/last-image}}/image-style" -n -t int -s 5
+		done
+		;;
+	*LXQt*)
+		sleep 3
+		pcmanfm-qt --set-wallpaper="$image" --wallpaper-mode=zoom || exit 0
+		;;
+	*)
+		exit 0
+		;;
+esac
+
+mkdir -p "$(dirname "$marker")" && touch "$marker"
+"""
+WALLPAPER_AUTOSTART = """[Desktop Entry]
+Type=Application
+Name=sOnOs wallpaper
+Exec=/usr/local/bin/sonos-wallpaper
+OnlyShowIn=XFCE;LXQt;
+NoDisplay=true
+"""
+# Sway: its configuration includes /etc/sway/config.d/* last
+SWAY_WALLPAPER = f'output * bg {DEFAULT_WALLPAPER} fill\n'
+# The Breeze theme of the SDDM login screen
+SDDM_BREEZE_BACKGROUND = f'[General]\nbackground={DEFAULT_WALLPAPER}\n'
 
 # fastfetch falls back to /etc/xdg/fastfetch when a user has no config of their own,
 # so this one file covers root, existing accounts and accounts created later
@@ -354,6 +458,8 @@ class SonosProfile(DesktopProfile):
 		if (target / 'usr/bin/gtk-update-icon-cache').exists():
 			install_session.arch_chroot('gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor')
 
+		self._install_wallpapers(install_session)
+
 		logo = target / FASTFETCH_LOGO_TARGET
 		logo.parent.mkdir(parents=True, exist_ok=True)
 		FASTFETCH_LOGO.copy(logo)
@@ -361,6 +467,58 @@ class SonosProfile(DesktopProfile):
 		fastfetch_config = target / FASTFETCH_CONFIG_TARGET
 		fastfetch_config.parent.mkdir(parents=True, exist_ok=True)
 		fastfetch_config.write_text(json.dumps(FASTFETCH_CONFIG, indent=2) + '\n')
+
+	@staticmethod
+	def _write(path: Path, content: str, mode: int = 0o644) -> None:
+		path.parent.mkdir(parents=True, exist_ok=True)
+		path.write_text(content)
+		path.chmod(mode)
+
+	def _install_wallpapers(self, install_session: Installer) -> None:
+		target = install_session.target
+
+		for name, (source, title) in WALLPAPERS.items():
+			image = target / WALLPAPER_DIR / name
+			image.parent.mkdir(parents=True, exist_ok=True)
+			shutil.copyfile(source, image)
+
+			# KDE Plasma lists wallpapers that are packages, the image itself is linked
+			package = target / 'usr/share/wallpapers' / title.replace(' ', '-')
+			metadata = {'KPlugin': {'Id': package.name, 'Name': title, 'License': 'GPL-3.0', 'Authors': [{'Name': 'sOnOs'}]}}
+			self._write(package / 'metadata.json', json.dumps(metadata, indent=2) + '\n')
+			link = package / 'contents/images/3840x2160.jpg'
+			link.parent.mkdir(parents=True, exist_ok=True)
+			link.unlink(missing_ok=True)
+			link.symlink_to(f'/{WALLPAPER_DIR}/{name}')
+
+		# The wallpaper pickers of GNOME and Budgie
+		entries = ''.join(
+			f'  <wallpaper deleted="false">\n    <name>{title}</name>\n    <filename>/{WALLPAPER_DIR}/{name}</filename>\n'
+			'    <options>zoom</options>\n  </wallpaper>\n'
+			for name, (_, title) in WALLPAPERS.items()
+		)
+		self._write(
+			target / 'usr/share/gnome-background-properties/sonos.xml',
+			f'<?xml version="1.0"?>\n<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">\n<wallpapers>\n{entries}</wallpapers>\n',
+		)
+
+		self._write(target / PLASMA_UPDATE_SCRIPT, PLASMA_WALLPAPER_SCRIPT)
+		self._write(target / 'etc/xdg/kscreenlockerrc', PLASMA_LOCK_SCREEN)
+
+		self._write(target / 'usr/share/glib-2.0/schemas/90_sonos.gschema.override', GSCHEMA_OVERRIDE)
+		if (target / 'usr/bin/glib-compile-schemas').exists():
+			install_session.arch_chroot('glib-compile-schemas /usr/share/glib-2.0/schemas')
+
+		self._write(target / COSMIC_BACKGROUND, COSMIC_BACKGROUND_CONFIG)
+
+		self._write(target / 'usr/local/bin/sonos-wallpaper', WALLPAPER_AUTOSTART_SCRIPT, 0o755)
+		self._write(target / 'etc/xdg/autostart/sonos-wallpaper.desktop', WALLPAPER_AUTOSTART)
+
+		if (target / 'etc/sway').is_dir():
+			self._write(target / 'etc/sway/config.d/50-sonos-wallpaper.conf', SWAY_WALLPAPER)
+
+		if (target / 'usr/share/sddm/themes/breeze').is_dir():
+			self._write(target / 'usr/share/sddm/themes/breeze/theme.conf.user', SDDM_BREEZE_BACKGROUND)
 
 	@staticmethod
 	def _add_no_upgrade(pacman_conf: Path, file: str) -> None:
