@@ -1490,8 +1490,8 @@ msgstr "Etkin"
 msgid "Disabled"
 msgstr "Devre dışı"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Lütfen bu sorunu (ve dosyayı) https://github.com/aOnurTheDev/sOnInstall/issues adresine gönderin"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Lütfen bu sorunu (ve dosyayı) https://github.com/sOn-Os/sOnInstall/issues adresine gönderin"
 
 msgid "Mirror name"
 msgstr "Yansıma adı"

@@ -1497,8 +1497,8 @@ msgstr "Yoqilgan"
 msgid "Disabled"
 msgstr "O'chirilgan"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Iltimos, ushbu muammo (va fayl) haqida https://github.com/aOnurTheDev/sOnInstall/issues manziliga xabar bering"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Iltimos, ushbu muammo (va fayl) haqida https://github.com/sOn-Os/sOnInstall/issues manziliga xabar bering"
 
 msgid "Mirror name"
 msgstr "Ko'zgu nomi"

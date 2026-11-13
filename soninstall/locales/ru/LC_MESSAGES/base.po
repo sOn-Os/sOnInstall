@@ -1490,8 +1490,8 @@ msgstr "Включено"
 msgid "Disabled"
 msgstr "Выключено"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Пожалуйста, отправьте эту проблему (и файл) по адресу https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Пожалуйста, отправьте эту проблему (и файл) по адресу https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "Название зеркала"

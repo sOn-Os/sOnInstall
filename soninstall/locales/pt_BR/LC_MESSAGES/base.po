@@ -1513,8 +1513,8 @@ msgstr "Habilitado"
 msgid "Disabled"
 msgstr "Desabilitado"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Por favor, envie este problema (e o arquivo) para: https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Por favor, envie este problema (e o arquivo) para: https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "Nome do Mirror"

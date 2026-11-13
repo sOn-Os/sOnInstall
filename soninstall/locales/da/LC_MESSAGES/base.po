@@ -1520,8 +1520,8 @@ msgstr "Aktiveret"
 msgid "Disabled"
 msgstr "Deaktiveret"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Indsend venligst denne fejl (og filen) til https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Indsend venligst denne fejl (og filen) til https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "Spejlnavn"

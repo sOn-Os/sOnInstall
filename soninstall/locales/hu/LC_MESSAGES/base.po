@@ -1491,8 +1491,8 @@ msgstr "Engedélyezve"
 msgid "Disabled"
 msgstr "Letiltva"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Jelentse ezt a problémát (a naplófájllal együtt) itt: https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Jelentse ezt a problémát (a naplófájllal együtt) itt: https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "Tükörnév"

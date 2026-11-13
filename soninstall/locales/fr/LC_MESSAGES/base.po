@@ -774,7 +774,7 @@ msgstr "Dépôts personnalisés"
 msgid "[!] A log file has been created here: {}"
 msgstr "[!] Un fichier journal a été créé ici : {}"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
 msgstr ""
 "Veuillez signaler ce problème (et joindre le fichier) à https://github.com/"
 "archlinux/archinstall/issues"

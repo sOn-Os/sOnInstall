@@ -1526,8 +1526,8 @@ msgid "Disabled"
 msgstr ""
 
 #, fuzzy
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "    ეს პრობლემა და ფაილი გადმოგვიგზავნეთ ბმულზე https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "    ეს პრობლემა და ფაილი გადმოგვიგზავნეთ ბმულზე https://github.com/sOn-Os/sOnInstall/issues"
 
 #, fuzzy
 msgid "Mirror name"

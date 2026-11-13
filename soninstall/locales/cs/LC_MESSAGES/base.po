@@ -1494,8 +1494,8 @@ msgstr "Povoleno"
 msgid "Disabled"
 msgstr "Zakázáno"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Prosím, informujte nás o této chybě (spolu se souborem) na https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Prosím, informujte nás o této chybě (spolu se souborem) na https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "Jméno zrcadla"

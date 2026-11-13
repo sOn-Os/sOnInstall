@@ -15,7 +15,7 @@ Patch releases will be done against their own branches, branched from stable tag
 
 ## Discussions
 
-Questions, bugs and suggestions should be reported through the [GitHub issue tracker](https://github.com/aOnurTheDev/sOnInstall/issues).
+Questions, bugs and suggestions should be reported through the [GitHub issue tracker](https://github.com/sOn-Os/sOnInstall/issues).
 
 ## Coding convention
 
@@ -67,6 +67,6 @@ squash commits when the pull request is merged.
 Maintainer:
 * aOnurTheDev ([@aOnurTheDev](https://github.com/aOnurTheDev))
 
-[Contributors](https://github.com/aOnurTheDev/sOnInstall/graphs/contributors)
+[Contributors](https://github.com/sOn-Os/sOnInstall/graphs/contributors)
 
 sOninstall is based on [archinstall](https://github.com/archlinux/archinstall) by Anton Hvornum ([@Torxed](https://github.com/Torxed)) and its [contributors](https://github.com/archlinux/archinstall/graphs/contributors).

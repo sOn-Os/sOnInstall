@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-git clone https://github.com/aOnurTheDev/sOnInstall.git /root/soninstall-git
+git clone https://github.com/sOn-Os/sOnInstall.git /root/soninstall-git
 (cd /root/soninstall-git && git checkout master)
 
 # TODO: Set geo-mirrors statically instead

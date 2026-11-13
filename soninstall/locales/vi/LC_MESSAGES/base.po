@@ -1724,8 +1724,8 @@ msgstr "Đã bật"
 msgid "Disabled"
 msgstr "Vô hiệu hóa"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "Vui lòng gửi vấn đề này (và tệp) tới https://github.com/aOnurTheDev/sOnInstall/issues"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "Vui lòng gửi vấn đề này (và tệp) tới https://github.com/sOn-Os/sOnInstall/issues"
 
 msgid "Mirror name"
 msgstr "Tên máy chủ bản sao"

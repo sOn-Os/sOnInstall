@@ -178,11 +178,11 @@ OS_RELEASE = (
 	'ID_LIKE=arch\n'
 	'BUILD_ID=rolling\n'
 	'ANSI_COLOR="38;2;23;147;209"\n'
-	'HOME_URL="https://github.com/aOnurTheDev/sOnOs"\n'
-	'DOCUMENTATION_URL="https://github.com/aOnurTheDev/sOnOs"\n'
-	'SUPPORT_URL="https://github.com/aOnurTheDev/sOnOs"\n'
-	'BUG_REPORT_URL="https://github.com/aOnurTheDev/sOnOs"\n'
-	'PRIVACY_POLICY_URL="https://github.com/aOnurTheDev/sOnOs"\n'
+	'HOME_URL="https://github.com/sOn-Os/sOnOs"\n'
+	'DOCUMENTATION_URL="https://github.com/sOn-Os/sOnOs"\n'
+	'SUPPORT_URL="https://github.com/sOn-Os/sOnOs"\n'
+	'BUG_REPORT_URL="https://github.com/sOn-Os/sOnOs"\n'
+	'PRIVACY_POLICY_URL="https://github.com/sOn-Os/sOnOs"\n'
 	'LOGO="sonos"\n'
 )
 

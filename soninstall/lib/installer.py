@@ -168,7 +168,7 @@ class Installer:
 			# We avoid printing /mnt/<log path> because that might confuse people if they note it down
 			# and then reboot, and an identical log file will be found in the ISO medium anyway.
 			print(tr('[!] A log file has been created here: {}').format(logger.path))
-			print(tr('Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues'))
+			print(tr('Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues'))
 
 			# Return None to propagate the exception
 			return None
@@ -188,7 +188,7 @@ class Installer:
 			warn(f' - {step}')
 
 		warn(f'Detailed error logs can be found at: {logger.directory}')
-		warn('Submit this zip file as an issue to https://github.com/aOnurTheDev/sOnInstall/issues')
+		warn('Submit this zip file as an issue to https://github.com/sOn-Os/sOnInstall/issues')
 
 		self.sync_log_to_install_medium()
 		return False

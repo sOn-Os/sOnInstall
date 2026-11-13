@@ -14,8 +14,8 @@ msgstr ""
 msgid "[!] A log file has been created here: {} {}"
 msgstr "[!] यहाँ एक लॉग फ़ाइल बनाई गई है: {} {}"
 
-msgid "Please submit this issue (and file) to https://github.com/aOnurTheDev/sOnInstall/issues"
-msgstr "कृपया इस समस्या (और फ़ाइल) को https://github.com/aOnurTheDev/sOnInstall/issues पर सबमिट करें।"
+msgid "Please submit this issue (and file) to https://github.com/sOn-Os/sOnInstall/issues"
+msgstr "कृपया इस समस्या (और फ़ाइल) को https://github.com/sOn-Os/sOnInstall/issues पर सबमिट करें।"
 
 msgid "Do you really want to abort?"
 msgstr "क्या आप वाकई रद्द करना चाहते हैं?"
