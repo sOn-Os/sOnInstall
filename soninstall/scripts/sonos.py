@@ -1,6 +1,6 @@
 import os
 
-from soninstall.default_profiles.sonos import SONOS_PROFILE_NAME
+from soninstall.default_profiles.sonos import FASTFETCH_LOGO, SONOS_PROFILE_NAME
 from soninstall.lib.args import ArchConfig, ArchConfigHandler
 from soninstall.lib.disk.disk_menu import select_disk_config
 from soninstall.lib.general.general_menu import select_timezone
@@ -19,7 +19,7 @@ from soninstall.lib.profile.profiles_handler import profile_handler
 from soninstall.lib.translationhandler import Language, tr, translation_handler
 from soninstall.lib.user.user_menu import validate_username
 from soninstall.scripts import guided
-from soninstall.tui.components import tui
+from soninstall.tui.components import IntroScreen, tui
 from soninstall.tui.menu_item import MenuItem, MenuItemGroup
 from soninstall.tui.result import ResultType
 
@@ -103,7 +103,7 @@ CONSOLE_FONT = 'LatGrkCyr-8x16'
 
 
 def _step(number: int) -> None:
-	tui.step = tr('Step {} of {}').format(number, STEPS)
+	tui.step = (number, STEPS)
 
 
 def _languages() -> list[Language]:
@@ -234,13 +234,19 @@ async def _ask(config: ArchConfig) -> ArchConfig:
 	return config
 
 
+async def _start(config: ArchConfig) -> ArchConfig:
+	# In English: the language is the first question
+	await IntroScreen(FASTFETCH_LOGO.read_text(), 'PLAIN ARCH LINUX  ·  NINE QUESTIONS TO INSTALL').run()
+	return await _ask(config)
+
+
 def show_wizard(arch_config_handler: ArchConfigHandler, mirror_list_handler: MirrorListHandler) -> None:
 	config = arch_config_handler.config
 
 	# Fill in the defaults of the full menu (bootloader, network, audio, swap, ...)
 	GlobalMenu(config, mirror_list_handler, arch_config_handler.args.skip_boot).sync_all_to_config()
 
-	tui.run(lambda: _ask(config))
+	tui.run(lambda: _start(config))
 
 
 def main(arch_config_handler: ArchConfigHandler | None = None) -> None:

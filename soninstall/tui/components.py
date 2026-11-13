@@ -1,9 +1,15 @@
+import math
+import os
 import sys
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, replace
+from pathlib import Path
 from typing import Any, ClassVar, Literal, TypeVar, cast, override
 
+from rich.console import Console, ConsoleOptions, RenderableType, RenderResult
+from rich.segment import Segment
+from rich.style import Style
 from rich.text import Text
 from textual import work
 from textual.app import App, ComposeResult
@@ -43,16 +49,93 @@ def _update_preview(widget: Label, result: str | PreviewResult | None) -> None:
 		widget.update(text)
 
 
-def _header_bar(subtitle: str | None = None) -> Label:
-	text = Text()
-	text.append('s', style='bold white')
-	text.append('On', style='bold red')
-	text.append('Os', style='bold white')
+# The colours of the sOnOs website
+INK = '#0B0909'
+RED = '#E53935'
+WHITE = '#FFFFFF'
+SMOKE = '#A79C9D'
+LINE = '#3A3132'
 
-	if subtitle := subtitle or tui.step:
-		text.append(f'   {subtitle}', style='white')
 
-	return Label(text, classes='app-header')
+def _red(brightness: float) -> str:
+	"""The red of the logo, dimmed towards the background"""
+	ink, red = (0x0B, 0x09, 0x09), (0xE5, 0x39, 0x35)
+	return '#' + ''.join(f'{round(i + (r - i) * brightness):02X}' for i, r in zip(ink, red, strict=True))
+
+
+def _reduce_motion() -> bool:
+	"""No blinking or flickering for the speech synthesis boot entry, or when asked for"""
+	if os.environ.get('TEXTUAL_ANIMATIONS') == 'none':
+		return True
+
+	try:
+		return 'accessibility=' in Path('/proc/cmdline').read_text()
+	except OSError:
+		return False
+
+
+# The Linux console has 16 colours. While the installer is shown, the ones the colours above
+# are drawn with become those colours: background, red, secondary text, lines and white.
+_CONSOLE_PALETTE = {0: INK, 1: RED, 7: SMOKE, 8: LINE, 9: RED, 15: WHITE}
+
+
+def _set_console_palette(enabled: bool) -> None:
+	if os.environ.get('TERM') != 'linux' or not sys.stdout.isatty():
+		return
+
+	if enabled:
+		sequence = ''.join(f'\x1b]P{index:X}{colour[1:]}' for index, colour in _CONSOLE_PALETTE.items())
+	else:
+		sequence = '\x1b]R'
+
+	sys.stdout.write(sequence)
+	sys.stdout.flush()
+
+
+class _HeaderBar(Horizontal):
+	"""The wordmark, and the marks of the steps like the ones above the nine questions on the website"""
+
+	def __init__(self, subtitle: str | None = None) -> None:
+		mark = Text()
+		mark.append('s', style=f'bold italic {WHITE}')
+		mark.append('On', style=f'bold italic {RED}')
+		mark.append('Os', style=f'bold italic {WHITE}')
+
+		self._subtitle = subtitle
+		self._lit = True
+		super().__init__(Label(mark, classes='app-mark'), Label(self._status(), classes='app-status'), classes='app-header')
+
+	def _status(self) -> Text:
+		status = Text()
+
+		if tui.step:
+			number, total = tui.step
+			for index in range(total):
+				if index < number - 1:
+					colour = RED
+				elif index == number - 1:
+					# The current step blinks like the cursor on the website
+					colour = RED if self._lit else _red(0.25)
+				else:
+					colour = LINE
+				status.append('■ ', style=colour)
+			status.append(' ' + tr('Step {} of {}').format(number, total).upper(), style=SMOKE)
+		elif self._subtitle:
+			status.append(self._subtitle.upper(), style=SMOKE)
+
+		return status
+
+	def on_mount(self) -> None:
+		if tui.step and self.app.animation_level != 'none':
+			self.set_interval(0.6, self._blink)
+
+	def _blink(self) -> None:
+		self._lit = not self._lit
+		self.query_one('.app-status', Label).update(self._status())
+
+
+def _header_bar(subtitle: str | None = None) -> Horizontal:
+	return _HeaderBar(subtitle)
 
 
 def _translate_bindings(source: BindingsMap | None, target: BindingsMap) -> None:
@@ -65,6 +148,39 @@ def _translate_bindings(source: BindingsMap | None, target: BindingsMap) -> None
 		return
 	for key, bindings in source.key_to_bindings.items():
 		target.key_to_bindings[key] = [replace(b, description=tr(b.description)) if b.description else b for b in bindings]
+
+
+class _Bands:
+	"""The red bands of the sOnOs wallpaper, leaning like the logo, behind every screen"""
+
+	# Left edge at the bottom and width as parts of the screen width, and brightness
+	BANDS = ((0.76, 0.1, 1.0), (0.885, 0.01, 0.85), (0.91, 0.005, 0.6))
+	# 12 degrees, with terminal cells about twice as high as they are wide
+	SHIFT = math.tan(math.radians(12)) * 2
+
+	def __rich_console__(self, console: Console, options: ConsoleOptions) -> RenderResult:
+		width = options.max_width
+		height = options.height or console.height
+		blank = Style(bgcolor=INK)
+
+		for y in range(height):
+			cells = [Segment(' ', blank)] * width
+
+			for left, size, brightness in self.BANDS:
+				start = left * width + (height - 1 - y) * self.SHIFT
+				end = start + max(size * width, 0.5)
+				style = Style(color=_red(brightness), bgcolor=INK)
+
+				for x in range(max(int(start), 0), min(math.ceil(end), width)):
+					cover = min(end, x + 1) - max(start, x)
+					if cover >= 0.75:
+						cells[x] = Segment('█', style)
+					elif cover >= 0.25:
+						# Half blocks for the edges
+						cells[x] = Segment('▐' if start > x else '▌', style)
+
+			yield from Segment.simplify(cells)
+			yield Segment.line()
 
 
 class BaseScreen(Screen[Result[ValueT]]):
@@ -82,6 +198,24 @@ class BaseScreen(Screen[Result[ValueT]]):
 		if self._allow_skip:
 			_ = self.dismiss(Result(ResultType.Skip))
 
+	@override
+	def render(self) -> RenderableType:
+		return _Bands()
+
+	def on_screen_resume(self) -> None:
+		if self.app.animation_level == 'none':
+			return
+
+		for widget in self.query('.content-container, .container-wrapper'):
+			widget.styles.opacity = 0.0
+			widget.styles.animate('opacity', 1.0, duration=0.35, easing='out_cubic', on_complete=self._faded_in)
+
+	def _faded_in(self) -> None:
+		# Textual caches the styles of widgets without their opacity: drop the ones from during the fade
+		for widget in self.query('*'):
+			widget.notify_style_update()
+			widget.refresh()
+
 	async def action_reset_operation(self) -> None:
 		if self._allow_reset:
 			_ = self.dismiss(Result(ResultType.Reset))
@@ -91,11 +225,12 @@ class LoadingScreen(BaseScreen[ValueT]):
 	CSS = """
 	LoadingScreen {
 		align: center middle;
-		background: transparent;
+		background: #0B0909;
 	}
 
 	.content-container {
-		width: 1fr;
+		width: auto;
+		max-width: 100%;
 		height: 1fr;
 		max-height: 100%;
 
@@ -103,11 +238,12 @@ class LoadingScreen(BaseScreen[ValueT]):
 		margin-bottom: 2;
 
 		background: transparent;
+		align-horizontal: center;
 	}
 
 	LoadingIndicator {
 		align: center middle;
-		color: red;
+		color: #E53935;
 	}
 	"""
 
@@ -203,15 +339,17 @@ class OptionListScreen(BaseScreen[ValueT]):
 	CSS = """
 	OptionListScreen {
 		align: center middle;
-		background: transparent;
+		background: #0B0909;
 	}
 
 	OptionListScreen .content-container {
-		width: 100%;
+		width: auto;
+		max-width: 100%;
 		height: auto;
 		max-height: 100%;
 
 		background: transparent;
+		align-horizontal: center;
 	}
 
 	/* The list sits in a centered box below the question */
@@ -221,18 +359,19 @@ class OptionListScreen(BaseScreen[ValueT]):
 
 		padding: 0 2;
 
-		border: solid gray;
-		background: transparent;
+		border: solid #3A3132;
+		background: #0B0909;
 	}
 
 	/* With a preview, the box holds the question, the list and the preview */
 	OptionListScreen .content-container.with-preview {
+		background: #0B0909;
 		width: 90%;
 		height: 1fr;
 		margin: 1 0;
 		padding: 0 2;
 
-		border: solid gray;
+		border: solid #3A3132;
 	}
 
 	OptionListScreen OptionList {
@@ -241,7 +380,7 @@ class OptionListScreen(BaseScreen[ValueT]):
 		min-width: 32;
 		max-height: 55vh;
 
-		background: transparent;
+		background: #0B0909;
 	}
 
 	OptionListScreen .with-preview OptionList {
@@ -254,8 +393,8 @@ class OptionListScreen(BaseScreen[ValueT]):
 	}
 
 	OptionList > .option-list--option-highlighted {
-		background: red;
-		color: white;
+		background: #E53935;
+		color: #0B0909;
 		text-style: bold;
 	}
 
@@ -450,15 +589,17 @@ class SelectListScreen(BaseScreen[ValueT]):
 	CSS = """
 	SelectListScreen {
 		align: center middle;
-		background: transparent;
+		background: #0B0909;
 	}
 
 	SelectListScreen .content-container {
-		width: 100%;
+		width: auto;
+		max-width: 100%;
 		height: auto;
 		max-height: 100%;
 
 		background: transparent;
+		align-horizontal: center;
 	}
 
 	/* The list sits in a centered box below the question */
@@ -468,18 +609,19 @@ class SelectListScreen(BaseScreen[ValueT]):
 
 		padding: 0 2;
 
-		border: solid gray;
-		background: transparent;
+		border: solid #3A3132;
+		background: #0B0909;
 	}
 
 	/* With a preview, the box holds the question, the list and the preview */
 	SelectListScreen .content-container.with-preview {
+		background: #0B0909;
 		width: 90%;
 		height: 1fr;
 		margin: 1 0;
 		padding: 0 2;
 
-		border: solid gray;
+		border: solid #3A3132;
 	}
 
 	SelectionList {
@@ -488,7 +630,7 @@ class SelectListScreen(BaseScreen[ValueT]):
 		min-width: 32;
 		max-height: 55vh;
 
-		background: transparent;
+		background: #0B0909;
 	}
 
 	SelectListScreen .with-preview SelectionList {
@@ -501,14 +643,24 @@ class SelectListScreen(BaseScreen[ValueT]):
 	}
 
 	SelectionList > .option-list--option-highlighted {
-		background: red;
-		color: white;
+		background: #E53935;
+		color: #0B0909;
 		text-style: bold;
+	}
+
+	SelectionList > .selection-list--button {
+		background: #0B0909;
+		color: #3A3132;
+	}
+
+	SelectionList > .selection-list--button-highlighted {
+		background: #0B0909;
+		color: #A79C9D;
 	}
 
 	SelectionList > .selection-list--button-selected,
 	SelectionList > .selection-list--button-selected-highlighted {
-		color: red;
+		color: #E53935;
 		text-style: bold;
 	}
 
@@ -710,7 +862,8 @@ class ConfirmationScreen(BaseScreen[ValueT]):
 
 	/* Holds the question and the buttons in the middle of the screen */
 	.content-container {
-		width: 1fr;
+		width: auto;
+		max-width: 100%;
 		height: 1fr;
 		max-height: 100%;
 
@@ -726,15 +879,16 @@ class ConfirmationScreen(BaseScreen[ValueT]):
 	}
 
 	Button {
-		width: 4;
+		width: 6;
 		height: 3;
-		background: transparent;
+		background: #0B0909;
 		margin: 0 1;
 	}
 
 	Button.-active {
-		background: red;
-		color: white;
+		background: #E53935;
+		color: #0B0909;
+		text-style: bold;
 		border: none;
 		text-style: none;
 	}
@@ -855,17 +1009,19 @@ class InputScreen(BaseScreen[str]):
 
 	.container-wrapper {
 		align: center middle;
-		width: 100%;
+		width: auto;
+		max-width: 100%;
 		height: auto;
 	}
 
 	.input-content {
+		background: #0B0909;
 		width: 70;
 		max-width: 100%;
 		height: auto;
 		padding: 0 3 1 3;
 
-		border: solid gray;
+		border: solid #3A3132;
 	}
 
 	InputScreen .header-text {
@@ -873,7 +1029,7 @@ class InputScreen(BaseScreen[str]):
 	}
 
 	.input-failure {
-		color: red;
+		color: #E53935;
 		text-align: center;
 	}
 
@@ -882,7 +1038,7 @@ class InputScreen(BaseScreen[str]):
 	}
 
 	.input-hint-msg-error {
-		color: red;
+		color: #E53935;
 	}
 
 	.input-hint-msg-warning {
@@ -1001,7 +1157,11 @@ class TableSelectionScreen(BaseScreen[ValueT]):
 	CSS = """
 	TableSelectionScreen {
 		align: center middle;
-		background: transparent;
+		background: #0B0909;
+	}
+
+	TableSelectionScreen .header-text {
+		width: 100%;
 	}
 
 	/* Without a preview the table is centered on the screen */
@@ -1012,7 +1172,8 @@ class TableSelectionScreen(BaseScreen[ValueT]):
 	}
 
 	.content-container {
-		width: 1fr;
+		width: auto;
+		max-width: 100%;
 		height: 1fr;
 		max-height: 100%;
 
@@ -1020,11 +1181,13 @@ class TableSelectionScreen(BaseScreen[ValueT]):
 		margin-bottom: 2;
 
 		background: transparent;
+		align-horizontal: center;
 	}
 
 	.table-container {
 		align: center top;
-		width: 1fr;
+		width: auto;
+		max-width: 100%;
 		height: 1fr;
 
 		background: transparent;
@@ -1044,17 +1207,17 @@ class TableSelectionScreen(BaseScreen[ValueT]):
 		padding-bottom: 2;
 
 		border: none;
-		background: transparent;
+		background: #0B0909;
 	}
 
 	DataTable .datatable--header {
-		background: transparent;
-		border: solid;
+		background: #0B0909;
+		color: #A79C9D;
 	}
 
 	DataTable > .datatable--cursor {
-		background: red;
-		color: white;
+		background: #E53935;
+		color: #0B0909;
 		text-style: bold;
 	}
 
@@ -1263,6 +1426,123 @@ class TableSelectionScreen(BaseScreen[ValueT]):
 		)
 
 
+class IntroScreen(BaseScreen[None]):
+	"""The logo powering up, like on the sOnOs website, then the installer being typed at a prompt"""
+
+	BINDINGS: ClassVar = [
+		Binding('enter', 'start', 'Start', show=True),
+	]
+
+	CSS = f"""
+	IntroScreen {{
+		align: center middle;
+		background: {INK};
+	}}
+
+	IntroScreen .intro {{
+		width: auto;
+		height: auto;
+		align-horizontal: center;
+		background: {INK};
+	}}
+
+	IntroScreen Label {{
+		width: auto;
+	}}
+
+	#intro-tagline {{
+		margin-top: 2;
+		color: {SMOKE};
+	}}
+
+	#intro-prompt {{
+		margin-top: 1;
+	}}
+	"""
+
+	# The keyframes of the "On" on the website: seconds after the start, and its brightness
+	POWER_UP: ClassVar = [(0.0, 0.18), (0.55, 1.0), (0.63, 0.25), (0.77, 1.0), (0.85, 0.55), (0.97, 1.0)]
+	COMMAND = 'soninstall'
+
+	def __init__(self, logo: str, tagline: str) -> None:
+		super().__init__()
+		# $1 starts the red "On" in each line of the logo, $2 ends it
+		self._logo = [line.replace('$2', '$1').split('$1') for line in logo.splitlines()]
+		self._tagline = tagline
+		self._typed = 0
+		self._cursor = True
+
+	async def run(self) -> Result[None]:
+		assert TApp.app
+		return await TApp.app.show(self)
+
+	def _logo_text(self, brightness: float) -> Text:
+		text = Text(no_wrap=True)
+		for number, parts in enumerate(self._logo):
+			if number:
+				text.append('\n')
+			for index, part in enumerate(parts):
+				text.append(part, style=f'bold {_red(brightness)}' if index == 1 else f'bold {WHITE}')
+		return text
+
+	def _prompt_text(self) -> Text:
+		text = Text()
+		text.append('root@sOnOs ~ # ', style=SMOKE)
+		text.append(self.COMMAND[: self._typed], style=f'bold {WHITE}')
+		text.append('█' if self._cursor else ' ', style=WHITE)
+		return text
+
+	@override
+	def compose(self) -> ComposeResult:
+		with Vertical(classes='intro'):
+			yield Label(self._logo_text(self.POWER_UP[0][1]), id='intro-logo')
+			yield Label(self._tagline, id='intro-tagline')
+			yield Label(self._prompt_text(), id='intro-prompt')
+
+		yield Footer()
+
+	def on_mount(self) -> None:
+		_translate_bindings(self._merged_bindings, self._bindings)
+
+		if self.app.animation_level == 'none':
+			self._typed = len(self.COMMAND)
+			self._show_logo(1.0)
+			self._update_prompt()
+			return
+
+		for label in self.query('#intro-tagline, #intro-prompt'):
+			label.styles.opacity = 0.0
+
+		for seconds, brightness in self.POWER_UP:
+			self.set_timer(0.35 + seconds, lambda b=brightness: self._show_logo(b))
+
+		self.set_timer(1.5, self._reveal)
+
+	def _show_logo(self, brightness: float) -> None:
+		self.query_one('#intro-logo', Label).update(self._logo_text(brightness))
+
+	def _reveal(self) -> None:
+		for label in self.query('#intro-tagline, #intro-prompt'):
+			label.styles.animate('opacity', 1.0, duration=0.4, easing='out_cubic', on_complete=self._faded_in)
+
+		self.set_interval(0.07, self._type, repeat=len(self.COMMAND))
+		self.set_interval(0.55, self._blink)
+
+	def _type(self) -> None:
+		self._typed += 1
+		self._update_prompt()
+
+	def _blink(self) -> None:
+		self._cursor = not self._cursor
+		self._update_prompt()
+
+	def _update_prompt(self) -> None:
+		self.query_one('#intro-prompt', Label).update(self._prompt_text())
+
+	def action_start(self) -> None:
+		_ = self.dismiss(Result(ResultType.Selection))
+
+
 class InstanceRunnable[ValueT](ABC):
 	@abstractmethod
 	async def run(self) -> ValueT | None:
@@ -1279,48 +1559,78 @@ class _AppInstance(App[ValueT]):
 
 	CSS = """
 	Screen {
-		color: white;
+		background: #0B0909;
+		color: #FFFFFF;
 	}
 
 	* {
 		scrollbar-size: 1 1;
-
-		/* Use high contrast colors */
-		scrollbar-color: white;
-		scrollbar-background: black;
+		scrollbar-color: #E53935;
+		scrollbar-color-hover: #E53935;
+		scrollbar-color-active: #E53935;
+		scrollbar-background: #3A3132;
+		scrollbar-background-hover: #3A3132;
+		scrollbar-background-active: #3A3132;
 	}
 
 	.app-header {
 		dock: top;
 		height: 2;
 		width: 100%;
-		content-align: center middle;
-		border-bottom: solid red;
-		background: transparent;
-		color: white;
+		padding: 0 2;
+
+		border-bottom: solid #3A3132;
+		background: #0B0909;
+	}
+
+	Center {
+		width: auto;
+	}
+
+	.app-mark {
+		width: 1fr;
+	}
+
+	.app-status {
+		width: auto;
 	}
 
 	.header-text {
 		text-align: center;
-		width: 100%;
+		width: auto;
+		max-width: 100%;
 		height: auto;
 
 		padding-top: 1;
 		padding-bottom: 1;
 
+		color: #FFFFFF;
 		text-style: bold;
 		background: transparent;
 	}
 
 	.preview-header {
 		text-align: center;
-		color: white;
+		color: #FFFFFF;
 		text-style: bold;
-		width: 100%;
+		width: auto;
+		max-width: 100%;
 
 		padding-bottom: 1;
 
 		background: transparent;
+	}
+
+	#preview_content {
+		color: #A79C9D;
+	}
+
+	OptionList, SelectionList, DataTable, .with-preview ScrollableContainer {
+		background: #0B0909;
+	}
+
+	Rule {
+		color: #3A3132;
 	}
 
 	.no-border {
@@ -1328,48 +1638,60 @@ class _AppInstance(App[ValueT]):
 	}
 
 	Input {
-		border: solid gray 50%;
-		background: transparent;
+		border: solid #3A3132;
+		background: #0B0909;
 		height: 3;
-		color: white;
+		color: #FFFFFF;
+	}
+
+	Input > .input--placeholder {
+		color: #A79C9D;
 	}
 
 	Input .input--cursor {
-		color: white;
+		color: #0B0909;
+		background: #FFFFFF;
 	}
 
 	Input:focus {
-		border: solid red;
+		border: solid #E53935;
 	}
 
 	Footer {
 		dock: bottom;
 		width: 100%;
-		background: transparent;
-		color: white;
+		background: #0B0909;
+		color: #A79C9D;
 		height: 1;
 	}
 
-	.footer-key--key {
-		background: black;
-		color: white;
+	FooterKey {
+		background: #0B0909;
 	}
 
-	.footer-key--description {
-		background: black;
-		color: white;
+	FooterKey .footer-key--key {
+		background: #0B0909;
+		color: #E53935;
+		text-style: bold;
+	}
+
+	FooterKey .footer-key--description {
+		background: #0B0909;
+		color: #A79C9D;
 		padding-right: 2;
 	}
 
 	FooterKey.-command-palette {
-		background: black;
-		border-left: vkey white 20%;
+		background: #0B0909;
+		border-left: vkey #3A3132;
 	}
-
 	"""
 
 	def __init__(self, main: InstanceRunnable[ValueT] | Callable[[], Awaitable[ValueT]]) -> None:
 		super().__init__(ansi_color=True)
+
+		if _reduce_motion():
+			self.animation_level = 'none'
 		self._main = main
 
 	@override
@@ -1420,11 +1742,17 @@ class _AppInstance(App[ValueT]):
 
 class TApp:
 	app: _AppInstance[Any] | None = None
-	step: str | None = None
+	# The current step of the wizard and the number of steps
+	step: tuple[int, int] | None = None
 
 	def run(self, main: InstanceRunnable[ValueT] | Callable[[], Awaitable[ValueT]]) -> ValueT:
 		TApp.app = _AppInstance(main)
-		result: ValueT | Exception | None = TApp.app.run()
+
+		_set_console_palette(True)
+		try:
+			result: ValueT | Exception | None = TApp.app.run()
+		finally:
+			_set_console_palette(False)
 
 		if isinstance(result, Exception):
 			raise result

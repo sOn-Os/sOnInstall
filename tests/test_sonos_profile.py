@@ -6,7 +6,19 @@ import pytest
 
 from soninstall.default_profiles.desktops.plasma import PlasmaFlavor, PlasmaProfile
 from soninstall.default_profiles.profile import CustomSetting
-from soninstall.default_profiles.sonos import FASTFETCH_LOGO, FASTFETCH_LOGO_TARGET, LOGO_ICON, LOGO_ICON_TARGETS, SONOS_PROFILE_NAME, SonosProfile, logo_banner
+from soninstall.default_profiles.sonos import (
+	COSMIC_BACKGROUND,
+	DEFAULT_WALLPAPER,
+	FASTFETCH_LOGO,
+	FASTFETCH_LOGO_TARGET,
+	LOGO_ICON,
+	LOGO_ICON_TARGETS,
+	PLASMA_UPDATE_SCRIPT,
+	SONOS_PROFILE_NAME,
+	WALLPAPER_DIR,
+	SonosProfile,
+	logo_banner,
+)
 from soninstall.lib.hardware import SysInfo
 from soninstall.lib.installer import Installer
 from soninstall.lib.pacman.pacman import Pacman
@@ -212,3 +224,35 @@ def test_logo_icon_needs_no_fonts() -> None:
 	assert '<path' in icon
 	assert '<text' not in icon
 	assert '@font-face' not in icon
+
+
+def test_wallpaper_is_the_default_on_every_desktop(tmp_path: Path) -> None:
+	for directory in ('etc/sway', 'usr/share/sddm/themes/breeze'):
+		(tmp_path / directory).mkdir(parents=True)
+
+	SonosProfile()._install_wallpapers(_session(tmp_path))
+
+	image = tmp_path / WALLPAPER_DIR / 'sonos.jpg'
+	assert image.read_bytes()[:2] == b'\xff\xd8'  # JPEG
+	assert (tmp_path / WALLPAPER_DIR / 'sonos-terminal.jpg').exists()
+
+	# KDE Plasma: wallpaper packages pointing at the images, the desktop and the lock screen
+	link = tmp_path / 'usr/share/wallpapers/sOnOs/contents/images/3840x2160.jpg'
+	assert str(link.readlink()) == DEFAULT_WALLPAPER
+	assert json.loads((tmp_path / 'usr/share/wallpapers/sOnOs-Terminal/metadata.json').read_text())['KPlugin']['Name'] == 'sOnOs Terminal'
+	assert 'file:///usr/share/wallpapers/sOnOs/' in (tmp_path / PLASMA_UPDATE_SCRIPT).read_text()
+	assert 'file:///usr/share/wallpapers/sOnOs/' in (tmp_path / 'etc/xdg/kscreenlockerrc').read_text()
+
+	expected = {
+		'usr/share/glib-2.0/schemas/90_sonos.gschema.override': f"picture-uri='file://{DEFAULT_WALLPAPER}'",
+		'usr/share/gnome-background-properties/sonos.xml': f'<filename>{DEFAULT_WALLPAPER}</filename>',
+		COSMIC_BACKGROUND: f'Path("{DEFAULT_WALLPAPER}")',
+		'etc/sway/config.d/50-sonos-wallpaper.conf': f'output * bg {DEFAULT_WALLPAPER} fill',
+		'usr/share/sddm/themes/breeze/theme.conf.user': f'background={DEFAULT_WALLPAPER}',
+		'usr/local/bin/sonos-wallpaper': f'image={DEFAULT_WALLPAPER}',
+	}
+	for path, content in expected.items():
+		assert content in (tmp_path / path).read_text(), path
+
+	assert (tmp_path / 'usr/local/bin/sonos-wallpaper').stat().st_mode & 0o111
+	assert 'OnlyShowIn=XFCE;LXQt;' in (tmp_path / 'etc/xdg/autostart/sonos-wallpaper.desktop').read_text()
