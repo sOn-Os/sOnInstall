@@ -2,7 +2,7 @@
 # Builds the soninstall package from this checkout (uncommitted changes included) into a local
 # pacman repository, such as the one the sOnOs ISO profile installs soninstall from:
 #
-#   packaging/local/build-repo.sh ~/sOnOs/repo
+#   packaging/local/build-repo.sh /var/tmp/sonos-repo
 #
 # Run it as a regular user, makepkg uses sudo only to install missing build dependencies.
 set -euo pipefail
