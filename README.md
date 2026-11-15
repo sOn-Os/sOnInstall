@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/sOn-Os/sOnOs/releases"><img src="https://img.shields.io/badge/get-sOnOs-E53935?style=for-the-badge" alt="Get sOnOs"></a>
-  <img src="https://img.shields.io/badge/status-beta-0B0909?style=for-the-badge" alt="Status: beta">
+  <a href="https://github.com/sOn-Os/sOnOs/releases/latest"><img src="https://img.shields.io/github/v/release/sOn-Os/sOnOs?style=for-the-badge&label=release&color=0B0909" alt="Latest release"></a>
   <img src="https://img.shields.io/badge/python-3.14-0B0909?style=for-the-badge" alt="Python 3.14">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-GPL--3.0-0B0909?style=for-the-badge" alt="License: GPL-3.0"></a>
 </p>
