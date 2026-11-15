@@ -16,6 +16,8 @@ from soninstall.default_profiles.sonos import (
 	PLASMA_UPDATE_SCRIPT,
 	SONOS_KEYRING,
 	SONOS_PROFILE_NAME,
+	SONOS_SETTINGS,
+	TUNING_SERVICES,
 	WALLPAPER_DIR,
 	SonosProfile,
 	logo_banner,
@@ -285,3 +287,25 @@ def test_keyring_is_installed_with_the_sonos_repository(tmp_path: Path, pacman_c
 
 	installed = [package for call in session.add_additional_packages.call_args_list for package in call.args[0]]
 	assert (SONOS_KEYRING in installed) == keyring
+	assert (SONOS_SETTINGS in installed) == keyring
+
+
+@pytest.mark.parametrize('units', [True, False])
+def test_tuning_services_are_enabled_when_installed(tmp_path: Path, units: bool) -> None:
+	# Without the [sonos] repository sonos-settings is not installed and there is nothing to start
+	if units:
+		for service in TUNING_SERVICES:
+			unit = tmp_path / f'usr/lib/systemd/system/{service}.service'
+			unit.parent.mkdir(parents=True, exist_ok=True)
+			unit.write_text('[Unit]\n')
+
+	(tmp_path / 'etc').mkdir()
+
+	session = _session(tmp_path)
+	with patch.object(SonosProfile, '_install_wallpapers'):
+		SonosProfile().post_install(session)
+
+	if units:
+		session.enable_service.assert_called_once_with(TUNING_SERVICES)
+	else:
+		session.enable_service.assert_not_called()

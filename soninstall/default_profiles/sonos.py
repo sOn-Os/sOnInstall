@@ -17,6 +17,11 @@ SONOS_PROFILE_NAME = 'sOnOs'
 
 # The keys of the [sonos] package repository
 SONOS_KEYRING = 'sonos-keyring'
+# CPU, I/O and memory tuning in the style of CachyOS; pulls in ananicy-cpp, its rules and the
+# sched_ext schedulers. Lives in the [sonos] repository, like the keyring.
+SONOS_SETTINGS = 'sonos-settings'
+# Started on the installed system when sonos-settings brought them
+TUNING_SERVICES = ['ananicy-cpp', 'scx_loader']
 
 FASTFETCH_LOGO = Path(__file__).parent / 'sonos_assets/fastfetch-logo.txt'
 FASTFETCH_LOGO_TARGET = 'usr/share/sonos/fastfetch-logo.txt'
@@ -387,7 +392,7 @@ class SonosProfile(DesktopProfile):
 			install_session.add_additional_packages([language_pack])
 
 		if self._has_sonos_repository():
-			install_session.add_additional_packages([SONOS_KEYRING])
+			install_session.add_additional_packages([SONOS_KEYRING, SONOS_SETTINGS])
 
 	@staticmethod
 	def _has_sonos_repository() -> bool:
@@ -479,6 +484,10 @@ class SonosProfile(DesktopProfile):
 			install_session.arch_chroot('gtk-update-icon-cache -q -t -f /usr/share/icons/hicolor')
 
 		self._install_wallpapers(install_session)
+
+		units = [target / f'usr/lib/systemd/system/{service}.service' for service in TUNING_SERVICES]
+		if all(unit.exists() for unit in units):
+			install_session.enable_service(TUNING_SERVICES)
 
 		logo = target / FASTFETCH_LOGO_TARGET
 		logo.parent.mkdir(parents=True, exist_ok=True)
