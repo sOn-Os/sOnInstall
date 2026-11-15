@@ -1,4 +1,5 @@
 import json
+import re
 import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, override
@@ -6,12 +7,16 @@ from typing import TYPE_CHECKING, override
 from soninstall.default_profiles.desktop import DesktopProfile
 from soninstall.lib.hardware import SysInfo
 from soninstall.lib.pacman.pacman import Pacman
+from soninstall.lib.pathnames import PACMAN_CONF
 
 if TYPE_CHECKING:
 	from soninstall.lib.installer import Installer
 
 
 SONOS_PROFILE_NAME = 'sOnOs'
+
+# The keys of the [sonos] package repository
+SONOS_KEYRING = 'sonos-keyring'
 
 FASTFETCH_LOGO = Path(__file__).parent / 'sonos_assets/fastfetch-logo.txt'
 FASTFETCH_LOGO_TARGET = 'usr/share/sonos/fastfetch-logo.txt'
@@ -380,6 +385,21 @@ class SonosProfile(DesktopProfile):
 
 		if language_pack := self._firefox_language_pack(install_session.target):
 			install_session.add_additional_packages([language_pack])
+
+		if self._has_sonos_repository():
+			install_session.add_additional_packages([SONOS_KEYRING])
+
+	@staticmethod
+	def _has_sonos_repository() -> bool:
+		"""
+		The pacman.conf of the live system is copied to the target (PacmanConfig.persist), so
+		a [sonos] repository in it is one the installed system keeps. Its packages are signed,
+		and without the keyring the first update would fail on them.
+		"""
+		try:
+			return re.search(r'^\[sonos\]', PACMAN_CONF.read_text(), re.MULTILINE) is not None
+		except OSError:
+			return False
 
 	@staticmethod
 	def _firefox_language_pack(target: Path) -> str | None:

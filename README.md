@@ -136,14 +136,16 @@ sOninstall can be installed next to archinstall.
 The [sOnOs ISO profile](https://github.com/sOn-Os/sOnOs) installs `soninstall` from a local package repository. To build the package from this checkout, uncommitted changes included, into that repository:
 
 ```shell
-packaging/local/build-repo.sh ~/sOnOs/repo
+packaging/local/build-repo.sh /var/tmp/sonos-repo
 ```
 
-Then build the ISO from the profile as usual:
+That folder is the one the profile's `pacman.build.conf` reads. Then build the ISO from the profile as usual:
 
 ```shell
-sudo mkarchiso -v -r -w ~/sonos-work -o ~/sonos-out .
+sudo mkarchiso -v -r -w /tmp/sonos-work -o out .
 ```
+
+The profile's own `scripts/build-local-repo.sh` does the first step too, and its README has the details.
 
 ## Development
 

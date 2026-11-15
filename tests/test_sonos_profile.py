@@ -14,6 +14,7 @@ from soninstall.default_profiles.sonos import (
 	LOGO_ICON,
 	LOGO_ICON_TARGETS,
 	PLASMA_UPDATE_SCRIPT,
+	SONOS_KEYRING,
 	SONOS_PROFILE_NAME,
 	WALLPAPER_DIR,
 	SonosProfile,
@@ -256,3 +257,31 @@ def test_wallpaper_is_the_default_on_every_desktop(tmp_path: Path) -> None:
 
 	assert (tmp_path / 'usr/local/bin/sonos-wallpaper').stat().st_mode & 0o111
 	assert 'OnlyShowIn=XFCE;LXQt;' in (tmp_path / 'etc/xdg/autostart/sonos-wallpaper.desktop').read_text()
+
+
+@pytest.mark.parametrize(
+	('pacman_conf', 'keyring'),
+	[
+		# The ISO uses the [sonos] repository, so the installed system will too
+		('[options]\n\n[sonos]\nSigLevel = Required\nServer = https://son-os.github.io/repo/$arch\n\n[core]\n', True),
+		# An ISO without it, or one where it is commented out
+		('[options]\n\n[core]\nInclude = /etc/pacman.d/mirrorlist\n', False),
+		('[options]\n#[sonos]\n[core]\n', False),
+		(None, False),
+	],
+)
+def test_keyring_is_installed_with_the_sonos_repository(tmp_path: Path, pacman_conf: str | None, keyring: bool) -> None:
+	host_conf = tmp_path / 'host-pacman.conf'
+	if pacman_conf is not None:
+		host_conf.write_text(pacman_conf)
+
+	session = _session(tmp_path / 'target')
+
+	with (
+		patch('soninstall.default_profiles.sonos.PACMAN_CONF', host_conf),
+		patch.object(Pacman, 'run', return_value=[]),
+	):
+		SonosProfile().install(session)
+
+	installed = [package for call in session.add_additional_packages.call_args_list for package in call.args[0]]
+	assert (SONOS_KEYRING in installed) == keyring
