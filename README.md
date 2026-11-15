@@ -142,7 +142,7 @@ packaging/local/build-repo.sh /var/tmp/sonos-repo
 That folder is the one the profile's `pacman.build.conf` reads. Then build the ISO from the profile as usual:
 
 ```shell
-sudo mkarchiso -v -r -w /tmp/sonos-work -o out .
+sudo mkarchiso -v -r -w /var/tmp/sonos-work -o out .
 ```
 
 The profile's own `scripts/build-local-repo.sh` does the first step too, and its README has the details.

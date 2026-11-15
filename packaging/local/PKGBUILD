@@ -3,7 +3,7 @@
 # Keep depends in sync with packaging/aur/soninstall-git/PKGBUILD.
 
 pkgname=soninstall
-pkgver=4.5
+pkgver=4.5.r202611151951
 pkgrel=1
 pkgdesc='sOninstall, the guided and automated installer for sOnOs (a fork of archinstall)'
 arch=('any')
